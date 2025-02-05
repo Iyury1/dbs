@@ -6,7 +6,6 @@ Rb        = 1e6;        % Bit rate
 oversamp  = 10;         % Oversampling factor (samples per bit)
 Fs        = Rb * oversamp; % Sampling frequency
 
-numBits   = 1000;       % Number of bits
 t_bit     = 1/Rb;       % Bit duration
 t_total   = numBits * t_bit;
 
@@ -14,11 +13,13 @@ t_total   = numBits * t_bit;
 t = linspace(0, t_total, numBits*oversamp);
 
 %% Generate random bits and map to phases
-bits       = randi([0 1], numBits, 1);
-symbols    = 2*bits - 1;     % Map 0->-1, 1->+1
+N = 1000;                 % Number of bits (symbols)
+txBits = randi([0 1], N, 1);
+bpskSymbols = 2*txBits - 1;  % 0->-1, 1->+1
+
 
 % Upsample the symbols to match oversamp
-symbols_upsampled = repmat(symbols.', oversamp, 1); 
+symbols_upsampled = repmat(symbols.', oversamp, 1);
 symbols_upsampled = symbols_upsampled(:).';  % row vector
 
 %% Generate carrier
@@ -32,6 +33,10 @@ bpsk_passband = symbols_upsampled .* carrier;
 % Let's define an SNR
 SNR_dB = 10;
 rx_noisy = awgn(bpsk_passband, SNR_dB, 'measured');
+
+SNR_dB = 10;   % desired signal-to-noise ratio in dB
+noisySymbols = awgn(complexSymbols, SNR_dB, 'measured');
+
 
 %% Downconversion via Mixer
 % In a hardware receiver, you'd have a local oscillator (LO) at ~fc
@@ -81,3 +86,4 @@ subplot(3,1,3);
 plot(t(1:500), baseband(1:500));
 title('Downconverted Baseband (filtered)');
 xlabel('Time (s)'); ylabel('Amplitude');
+
