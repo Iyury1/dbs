@@ -1,16 +1,16 @@
 clear; clc; close all;
 
 %% Parameters
-Fc = 24e9;       % Carrier frequency (for passband sim)
+Fc = 24.1e9;       % Carrier frequency (for passband sim)
 Fs = 1e9;       % Sampling rate (>= 2*Fc, oversample some)
 upsample = 4;
 Fct = Fs * upsample;      % Continuous time sampling rate
 
-N  = 1e3;        % Number of samples to simulate
+N  = 1e6;        % Number of samples to simulate
 SNR_dB = 10;     % SNR for the channel
 
 % BPSK symbol rate, etc.
-Fsym = 1e4;
+Fsym = 1e5;
 Ts = 1  / Fs;
 Tct = 1 / Fct;
 
@@ -100,9 +100,9 @@ firstBit = dataBits(1)
 firstSign_ideal = sign(rxSym_ideal(1))
 firstSign_1bit = sign(rxSym_1bit(1))
 
-secondBit = dataBits(2)
-secondSign_ideal = sign(rxSym_ideal(2))
-secondSign_1bit = sign(rxSym_1bit(2))
+secondBit = dataBits(1)
+secondSign_ideal = sign(rxSym_ideal(1))
+firstSign_1bit = sign(rxSym_1bit(1))
 
 
 % Convert received symbols back to bits:
@@ -114,6 +114,10 @@ rxBits_1bit  = (rxSym_1bit  + 1)/2;
 % Compare with the original bits
 numErrors_ideal = sum(rxBits_ideal ~= dataBits);
 numErrors_1bit  = sum(rxBits_1bit  ~= dataBits);
+
+disp(length(rxSym_ideal))
+disp(length(rxSym_1bit))
+disp(length(dataBits))
 
 
 BER_ideal = numErrors_ideal / M;
