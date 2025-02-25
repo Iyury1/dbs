@@ -6,15 +6,15 @@ function modulatedCarrierApp
     Tsym = 1 / bd_default;
     oversampleFactor = 10; % Oversampling factor
 
-    baseband_start = '0';
-    baseband_N = '5';
-    carrier_start = '0';
-    carrier_N = '5';  
-    sampled_start = '0';
-    sampled_N = '5';
-    baseband_bands = '1';
-    carrier_bands = '1';
-    sampled_bands = '1';
+    baseband_start = 0;
+    baseband_N = 5;
+    carrier_start = 0;
+    carrier_N = 5;  
+    sampled_start = 0;
+    sampled_N = 5;
+    baseband_bands = 1;
+    carrier_bands = 1
+    sampled_bands = 1;
 
     %% Create the main uifigure
     fig = uifigure('Name','Modulated Carrier Simulation',...
@@ -132,7 +132,6 @@ function modulatedCarrierApp
     % Carrier time domain
     ef_start_carrier_t = uieditfield(controlsGrid);
     ef_start_carrier_t.Layout.Row = 2; ef_start_carrier_t.Layout.Column = 1;
-    ef_start_carrier_t.Value = carrier_start;
     ef_start_carrier_t.ValueChangedFcn = @(src,event) editCarrierStartChanged(src,event);
     function editCarrierStartChanged(src,event)
         updatePlots();
@@ -142,7 +141,6 @@ function modulatedCarrierApp
 
     ef_N_carrier_t = uieditfield(controlsGrid);
     ef_N_carrier_t.Layout.Row = 2; ef_N_carrier_t.Layout.Column = 3;
-    ef_N_carrier_t.Value = carrier_N;
     ef_N_carrier_t.ValueChangedFcn = @(src,event) editCarrierNChanged(src,event);
     function editCarrierNChanged(src,event)
         updatePlots();
@@ -155,51 +153,43 @@ function modulatedCarrierApp
     % Carrier frequency domain
     ef_carrier_f = uieditfield(controlsGrid);
     ef_carrier_f.Layout.Row = 2; ef_carrier_f.Layout.Column = 7;
-    ef_carrier_f.Value = carrier_bands;
+    label_carrier_f = uilabel(controlsGrid);
+    label_carrier_f.Layout.Row = 2; label_carrier_f.Layout.Column = 8;
     ef_carrier_f.ValueChangedFcn = @(src,event) editCarrierBandChanged(src,event);
     function editCarrierBandChanged(src,event)
         updatePlots();
     end
-    label_carrier_f = uilabel(controlsGrid);
-    label_carrier_f.Layout.Row = 2; label_carrier_f.Layout.Column = 8;
-
 
 
     % Row 3 sliders
     % Sampled time domain
     ef_start_sampled_t = uieditfield(controlsGrid);
     ef_start_sampled_t.Layout.Row = 3; ef_start_sampled_t.Layout.Column = 1;
-    ef_start_sampled_t.Value = sampled_start;
+    label_start_sampled_t = uilabel(controlsGrid);
+    label_start_sampled_t.Layout.Row = 3; label_start_sampled_t.Layout.Column = 2;
+    ef_N_sampled_t = uieditfield(controlsGrid);
+    ef_N_sampled_t.Layout.Row = 3; ef_N_sampled_t.Layout.Column = 3;
+    label_N_sampled_t = uilabel(controlsGrid);
+    label_N_sampled_t.Layout.Row = 3; label_N_sampled_t.Layout.Column = 4;
     ef_start_sampled_t.ValueChangedFcn = @(src,event) editSampleStartChanged(src,event);
     function editSampleStartChanged(src,event)
         updatePlots();
     end
-    label_start_sampled_t = uilabel(controlsGrid);
-    label_start_sampled_t.Layout.Row = 3; label_start_sampled_t.Layout.Column = 2;
-
-    ef_N_sampled_t = uieditfield(controlsGrid);
-    ef_N_sampled_t.Layout.Row = 3; ef_N_sampled_t.Layout.Column = 3;
-    ef_N_sampled_t.Value = sampled_N;
     ef_N_sampled_t.ValueChangedFcn = @(src,event) editSampleNChanged(src,event);
     function editSampleNChanged(src,event)
         updatePlots();
     end
-    label_N_sampled_t = uilabel(controlsGrid);
-    label_N_sampled_t.Layout.Row = 3; label_N_sampled_t.Layout.Column = 4;
-
 
 
     % Sampled frequency domain
     ef_sampled_f = uieditfield(controlsGrid);
     ef_sampled_f.Layout.Row = 3; ef_sampled_f.Layout.Column = 7;
-    ef_sampled_f.Value = sampled_bands;
+    label_sampled_f = uilabel(controlsGrid);
+    label_sampled_f.Layout.Row = 3; label_sampled_f.Layout.Column = 8;
     ef_sampled_f.ValueChangedFcn = @(src,event) editSampleBandChanged(src,event);
     function editSampleBandChanged(src,event)
         updatePlots();
     end
-    label_sampled_f = uilabel(controlsGrid);
-    label_sampled_f.Layout.Row = 3; label_sampled_f.Layout.Column = 8;
-
 
     label_start_baseband_t.Text = sprintf('Baseband start');
     label_N_baseband_t.Text = sprintf('Baseband N');
@@ -302,6 +292,10 @@ function modulatedCarrierApp
     label_fsym.Layout.Column = 2;
     label_fsym.Text = sprintf('Bd: %f (MHz)', hSlider_fsym.Value);
     
+    %% Set slider callbacks to update plots when values change
+    %hSlider_fs.ValueChangedFcn = @(sld,event) updatePlots();
+    %hSlider_fc.ValueChangedFcn = @(sld,event) updatePlots();
+    %hSlider_fsym.ValueChangedFcn = @(sld,event) updatePlots();
 
     %% Define updatePlots function
     function updatePlots()
@@ -310,16 +304,6 @@ function modulatedCarrierApp
         label_fc.Text = sprintf('Fc: %f (GHz)', hSlider_fc.Value);
         label_fsym.Text = sprintf('Bd: %f (MHz)', hSlider_fsym.Value);
        
-        baseband_start = str2double(ef_start_baseband_t.Value);
-        baseband_N = str2double(ef_N_baseband_t.Value);
-        carrier_start = str2double(ef_start_carrier_t.Value);
-        carrier_N = str2double(ef_N_carrier_t.Value);
-        sampled_start = str2double(ef_start_sampled_t.Value);
-        sampled_N = str2double(ef_N_sampled_t.Value);
-        baseband_bands = str2double(ef_baseband_f.Value);
-        carrier_bands = str2double(ef_carrier_f.Value);
-        sampled_bands = str2double(ef_sampled_f.Value);
-
 
         % Retrieve current slider values
         fs = hSlider_fs.Value * 1e9;
@@ -333,9 +317,7 @@ function modulatedCarrierApp
         f_over = 8*fc;
 
         Tbd = 1 / bd;
-        Ts = 1 / fs;
-        Tover = 1 / f_over;
-
+        
         M = 10;
         SNR_dB = 100;
 
@@ -369,26 +351,32 @@ function modulatedCarrierApp
         %% 3) Sample the RF signals
         
         step = round(f_over / fs);
+
+        
         sample_ideal = rxRF_ideal(1:step:end);
+        
         sample_1bit = rxRF_1bit(1:step:end);
 
         t_sampled = (0:length(sample_1bit)-1) / fs;
 
         % Update time domain plot
 
-        ax_baseband_t.XLim = [baseband_start*Tover, (baseband_N+baseband_start)*Tover];
+
+        ax_baseband_t.XLim = [0, 5*Tbd];
         ax_baseband_t.YLim = [-2, 2];
 
         plot(ax_baseband_t, t_over, baseband, 'b');
-        title(ax_baseband_t, sprintf('Baseband Signal (Time Domain) [Bd = %.2f MHz]', bd / 1e6));
+        title(ax_baseband_t, sprintf('Baseband Signal (Time Domain) [Bd = %f MHz]', bd / 1e6));
         xlabel(ax_baseband_t, 'Time (s)'); ylabel(ax_baseband_t, 'Amplitude');
 
-        ax_carrier_t.XLim = [carrier_start*Tover, (carrier_start+carrier_N) * Tover];
+        %t_over(1:bd_idx), carrier(1:bd_idx)
+
+        ax_carrier_t.XLim = [0, 5/f_over];
         plot(ax_carrier_t, t_over, m, 'r');
         title(ax_carrier_t, sprintf('Carrier Signal (Time Domain) [Fc = %.2f GHz]', fc / 1e9));
         xlabel(ax_carrier_t, 'Time (s)'); ylabel(ax_carrier_t, 'Amplitude');
         
-        ax_sampled_t.XLim = [sampled_start*Ts, (sampled_start+sampled_N)*Ts];
+        ax_sampled_t.XLim = [0, 5*Tbd];
         stem(ax_sampled_t, t_sampled, sample_1bit, 'm');
         title(ax_sampled_t, sprintf('Sampled Signal (Time Domain) [Fs = %.2f GHz]', fs / 1e9));
         xlabel(ax_sampled_t, 'Time (s)'); ylabel(ax_sampled_t, 'Amplitude');
@@ -399,22 +387,24 @@ function modulatedCarrierApp
         Y_baseband = fftshift(fft(baseband, 1024))/1024;
         f_baseband = linspace(-f_over/2, f_over/2, 1024);
 
+        disp(length(Y_baseband))
+        disp(length(f_baseband))
         plot(ax_baseband_f, f_baseband, abs(Y_baseband), 'r');
-        title(ax_baseband_f, sprintf('Sampled Signal (Frequency Domain) [fs_{over} = %.2f GHz]', f_over / 1e9));
+        title(ax_baseband_f, sprintf('Sampled Signal (Frequency Domain) [fs = %f]', fs));
         xlabel(ax_baseband_f, 'Frequency (normalized)'); ylabel(ax_carrier_f, 'Magnitude');
         % Update frequency domain plots for the oversampled signal
 
         Y_m = fftshift(fft(m, 1024))/1024;
         f_m = linspace(-f_over/2, f_over/2, 1024);
         plot(ax_carrier_f, f_m, abs(Y_m), 'b');
-        title(ax_carrier_f, sprintf('Carrier Signal (Frequency Domain) [fs_{over} = %.2f GHz]', f_over / 1e9));
+        title(ax_carrier_f, sprintf('Carrier Signal (Frequency Domain) [fs_{over} = %f]', f_over));
         xlabel(ax_carrier_f, 'Frequency (normalized)'); ylabel(ax_baseband_f, 'Magnitude');
 
         % Update frequency domain plots for the sampled signal
         Y_sampled = fftshift(fft(sample_1bit, 1024))/1024;
         f_sampled = linspace(-fs/2, fs/2, 1024);
         plot(ax_sampled_f, f_sampled, abs(Y_sampled), 'r');
-        title(ax_sampled_f, sprintf('Sampled Signal (Frequency Domain) [fs = %.2f GHz]', fs / 1e9));
+        title(ax_sampled_f, sprintf('Sampled Signal (Frequency Domain) [fs = %f]', fs));
         xlabel(ax_sampled_f, 'Frequency (normalized)'); ylabel(ax_carrier_f, 'Magnitude');
 
 
